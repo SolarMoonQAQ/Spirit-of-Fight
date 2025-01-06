@@ -1,12 +1,14 @@
 package cn.solarmoon.spirit_of_fight.fighter.player
 
-import cn.solarmoon.spark_core.SparkCore
 import cn.solarmoon.spark_core.animation.vanilla.asAnimatable
 import cn.solarmoon.spark_core.entity.preinput.PreInput
 import cn.solarmoon.spark_core.entity.preinput.getPreInput
+import cn.solarmoon.spark_core.entity.state.getInputVector
+import cn.solarmoon.spark_core.entity.state.isJumping
 import cn.solarmoon.spark_core.local_control.LocalInputController
 import cn.solarmoon.spark_core.skill.getTypedSkillController
-import cn.solarmoon.spirit_of_fight.SpiritOfFight
+import cn.solarmoon.spark_core.util.MoveDirection
+import cn.solarmoon.spirit_of_fight.data.SOFSkillTags
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.controller.FightSkillController
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.controller.SwordFightSkillController
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.sync.ClientOperationPayload
@@ -21,6 +23,8 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent
 
 object PlayerLocalController: LocalInputController() {
 
+    var jumpContainTick = 0
+    var guardContainTick = 0
     val attackKey get() = Minecraft.getInstance().options.keyAttack
 
     override fun laterInit() {
@@ -31,18 +35,34 @@ object PlayerLocalController: LocalInputController() {
 
     fun attack(player: LocalPlayer, skillController: FightSkillController) {
         val preInput = player.getPreInput()
-        val index = skillController.comboIndex.get()
-        preInput.setInput("combo", 5) {
-            skillController.getComboSkill().activate()
-            addPackage(ClientOperationPayload(player.id, preInput.id, Vec3.ZERO, index))
-            skillController.comboIndex.increment()
+        when {
+            jumpContainTick < 0 -> {
+                jumpContainTick = 0
+                preInput.setInput("jump_attack", 5) {
+                    skillController.getJumpAttackSkill().activate()
+                    addPackage(ClientOperationPayload(player.id, preInput.id, Vec3.ZERO, 0))
+                }
+            }
+            player.isSprinting -> {
+                preInput.setInput("sprinting_attack", 5) {
+                    skillController.getSprintingAttackSkill().activate()
+                    addPackage(ClientOperationPayload(player.id, preInput.id, Vec3.ZERO, 0))
+                }
+            }
+            else -> {
+                preInput.setInput("combo", 5) {
+                    skillController.comboIndex.increment()
+                    skillController.getComboSkill().activate()
+                    addPackage(ClientOperationPayload(player.id, preInput.id, Vec3.ZERO, skillController.comboIndex.get()))
+                }
+            }
         }
     }
 
     fun guard(player: LocalPlayer, skillController: FightSkillController) {
         if (skillController.getGuardSkill().isActive()) return
-        val preInput = player.getPreInput()
 
+        val preInput = player.getPreInput()
         preInput.setInput("guard", 5) {
             skillController.getGuardSkill().activate()
             addPackage(ClientOperationPayload(player.id, preInput.id, Vec3.ZERO, 0))
@@ -50,22 +70,39 @@ object PlayerLocalController: LocalInputController() {
     }
 
     fun guardStop(player: LocalPlayer, skillController: FightSkillController) {
-        if (skillController.getGuardSkill().isActive()) {
+        if (skillController.getGuardSkill().isStanding) {
             skillController.getGuardSkill().end()
             addPackage(ClientOperationPayload(player.id, "guard_stop", Vec3.ZERO, 0))
         }
     }
 
+    fun dodge(player: LocalPlayer, skillController: FightSkillController, input: Input) {
+        val dodge = skillController.getDodgeSkill()
+        val preInput = player.getPreInput()
+        if (player.onGround()) {
+            val v = player.getInputVector()
+            val d = MoveDirection.getByInput(input) ?: return
+            preInput.setInput("dodge") {
+                dodge.moveVector = v
+                dodge.direction = d
+                dodge.activate()
+                addPackage(ClientOperationPayload(player.id, preInput.id, v, d.id))
+            }
+        }
+    }
+
     fun parry(player: LocalPlayer, skillController: SwordFightSkillController) {
-        SparkCore.LOGGER.info("wowo")
-        if (player.asAnimatable().animController.isPlaying(skillController.getGuardSkill().animName)) {
-            SparkCore.LOGGER.info("eee")
+        if (!skillController.getGuardSkill().isBacking && skillController.getGuardSkill().isActive()) {
             skillController.getParrySkill().activate()
             addPackage(ClientOperationPayload(player.id, "parry", Vec3.ZERO, 0))
         }
     }
 
     override fun tick(player: LocalPlayer, input: Input) {
+        if (player.isJumping()) {
+            jumpContainTick = -10
+        } else jumpContainTick++
+
         val skillController = player.getTypedSkillController<FightSkillController>() ?: return
 
         onRelease(attackKey) {
@@ -74,17 +111,24 @@ object PlayerLocalController: LocalInputController() {
             }
         }
 
+        if (!SOFKeyMappings.GUARD.isDown) {
+            guardContainTick++
+            if (guardContainTick > 0) guardStop(player, skillController)
+        }
+        else guardContainTick = -3
+
         onPress(SOFKeyMappings.GUARD) {
             guard(player, skillController)
-        }
-        onRelease(SOFKeyMappings.GUARD) {
-            guardStop(player, skillController)
         }
 
         onPressOnce(SOFKeyMappings.PARRY) {
             if (skillController is SwordFightSkillController) {
                 parry(player, skillController)
             }
+        }
+
+        onPressOnce(SOFKeyMappings.DODGE) {
+            dodge(player, skillController, input)
         }
 
         preInputControl(player, player.getPreInput())
@@ -95,16 +139,13 @@ object PlayerLocalController: LocalInputController() {
 
         // 不在进行任何技能时可释放预输入
         if (!skillController.isPlaying()) {
-            skillController.comboIndex.set(0)
             preInput.executeIfPresent()
         }
 
         // 连招1-2阶段可以变招
         player.asAnimatable().animData.playData.getMixedAnimation(skillController.getComboSkill(0).animName)?.let {
-            if (preInput.hasInput("combo") && it.isTickIn(0.05, 0.15)) preInput.executeIfPresent()
+            if (it.isTickIn(0.05, 0.15)) preInput.executeIfPresent("combo")
         }
-
-        // 格挡时可预输入闪避
     }
 
     override fun onInteract(player: LocalPlayer, event: InputEvent.InteractionKeyMappingTriggered) {
@@ -115,7 +156,50 @@ object PlayerLocalController: LocalInputController() {
     }
 
     override fun updateMovement(player: LocalPlayer, event: MovementInputUpdateEvent) {
+        stop(player, event)
+    }
 
+    fun stop(player: LocalPlayer, event: MovementInputUpdateEvent) {
+        val input = event.input
+        val skillController = player.getTypedSkillController<FightSkillController>() ?: return
+
+        fun stop() {
+            input.forwardImpulse = 0f
+            input.leftImpulse = 0f
+            input.up = false
+            input.down = false
+            input.left = false
+            input.right = false
+            input.jumping = false
+            input.shiftKeyDown = false
+            player.sprintTriggerTime = -1
+            player.swinging = false
+        }
+
+        // 在普通连招过程中可以按住s阻止前移
+        if (input.forwardImpulse < 0 && skillController.getComboSkill().isActive() == true) {
+            player.deltaMovement = Vec3(0.0, player.deltaMovement.y, 0.0)
+        }
+
+        // 格挡时缓慢行走
+        if (skillController.getGuardSkill().isStanding) {
+            input.forwardImpulse /= 4f
+            input.leftImpulse /= 4f
+            input.jumping = false
+            input.shiftKeyDown = false
+            player.sprintTriggerTime = -1
+            player.swinging = false
+        }
+
+        // 格挡击退禁止移动
+        if (skillController.getGuardSkill().isBacking) {
+            stop()
+        }
+
+        // 播放指定技能时禁止移动
+        if (skillController.allActiveSkills.any { it.`is`(SOFSkillTags.INPUT_FREEZE) }) {
+            stop()
+        }
     }
 
     fun shouldAttack(player: LocalPlayer): Boolean {
@@ -127,169 +211,6 @@ object PlayerLocalController: LocalInputController() {
         else getPressTick(attackKey) < 5
     }
 
-//    private var isDodgeKeyInstantPress = false
-
-//    @SubscribeEvent
-//    private fun localInput(event: KeyboardInputTickEvent.Post) {
-//        val player = Minecraft.getInstance().player ?: return
-//        player.getTypedSkillController<FightSkillController>()?.localPlayerInput(player)
-//    }
-//
-//    @SubscribeEvent
-//    private fun attack(event: InputEvent.InteractionKeyMappingTriggered) {
-//        val hit = Minecraft.getInstance().hitResult ?: return
-//        val player = Minecraft.getInstance().player ?: return
-//        player.getTypedSkillController<FightSkillController>()?.localPlayerInteractInput(player, event)
-//        if (player !is IFightSkillHolder) return
-//        val skillController = player.skillController ?: return
-//        if (event.isAttack && hit.type in listOf(HitResult.Type.ENTITY, HitResult.Type.MISS)) {
-//            SparkSkills.PLAYER_SWORD_COMBO_0.value().activate(player as IEntityAnimatable<*>)
-//            ClientOperationPayload.sendOperationToServer("combo")
-////            var shouldCombo = true
-////            for ((index, skill) in skillController.specialAttackSkillGroup.withIndex()) {
-////                if (skill !is ConcentrationAttackAnimSkill && skill.canRelease) {
-////                    skill.start {
-////                        ClientOperationPayload.sendOperationToServer(index.toString())
-////                    }
-////                    shouldCombo = false
-////                    break
-////                }
-////            }
-////            if (shouldCombo) {
-////                skillController.combo.start(false) {
-////                    ClientOperationPayload.sendOperationToServer("combo")
-////                }
-////                skillController.combo.getPlayingAnim()?.let {
-////                    // 这一段使得连招在50-150ms之间可以变招
-////                    val changeNode = skillController.combo.attackChangeNode[skillController.combo.index]
-////                    if (player.getPreInput().hasInput("combo") && changeNode != null && !it.isInTransition && it.isTickIn(0.05, 0.15)) {
-////                        skillController.combo.start(true) {
-////                            ClientOperationPayload.sendOperationToServer("combo_switch")
-////                        }
-////                        player.getPreInput().executeIfPresent("combo")
-////                    }
-////                }
-////            }
-//            event.setSwingHand(false)
-//            event.isCanceled = true
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    private fun specialAttack(event: KeyboardInputTickEvent.Post) {
-//        val player = Minecraft.getInstance().player ?: return
-//        if (player !is IFightSkillHolder) return
-//        val skillController = player.skillController ?: return
-//        while (SOFKeyMappings.SPECIAL_ATTACK.consumeClick()) {
-//            for ((index, skill) in skillController.specialAttackSkillGroup.withIndex()) {
-//                if (skill is ConcentrationAttackAnimSkill && skill.canRelease) {
-//                    skill.start {
-//                        ClientOperationPayload.sendOperationToServer(index.toString())
-//                    }
-//                    break
-//                }
-//            }
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    private fun dodge(event: KeyboardInputTickEvent.Post) {
-//        run {
-//            val player = Minecraft.getInstance().player ?: return@run
-//            val input = player.input
-//            val direction = MoveDirection.getByInput(input)
-//            if (direction != null && player is IFightSkillHolder && player.onGround()) {
-//                if (SOFKeyMappings.DODGE.key.value == event.options.keyShift.key.value) {
-//                    input.shiftKeyDown = false
-//                    if (player.isCrouching) return@run
-//                } // 如果和蹲键重合，则会取消蹲姿
-//                if (!isDodgeKeyInstantPress) return@run
-//                val skill = player.skillController ?: return@run
-//                val v = (player as LocalPlayer).getInputVector()
-//                skill.dodge.start(direction, v) {
-//                    ClientOperationPayload.sendOperationToServer("dodge", v, direction.id)
-//                }
-//            }
-//        }
-//        isDodgeKeyInstantPress = false
-//    }
-//
-//    @SubscribeEvent
-//    private fun guard(event: KeyboardInputTickEvent.Post) {
-//        val player = Minecraft.getInstance().player ?: return
-//        if (player.swinging) return // 优先级比使用物品/方块低
-//        if (player is IFightSkillHolder) {
-//            val preInput = (player as Entity).getPreInput()
-//            val skill = player.skillController ?: return
-//            if (SOFKeyMappings.GUARD.isDown && !player.isUsingItem) {
-//                if (skill is CommonFightSkillController && skill.parry.isPlaying()) return
-//                if (!skill.guard.isPlaying()) {
-//                    skill.guard.start {
-//                        // 防守检测上不是很敏感，因此需要确保客户端已经开始防守了以后再给服务端同步指令
-//                        ClientOperationPayload.sendOperationToServer("guard")
-//                    }
-//                }
-//            } else {
-//                preInput.clearIfPresent("guard") {
-//                    ClientOperationPayload.sendOperationToServer("guard_clear")
-//                } // 这里多加一条清除确保客户端一定取消操作
-//
-//                if (skill.guard.isPlaying { !it.isInTransition }) {
-//                    skill.guard.stop {
-//                        ClientOperationPayload.sendOperationToServer("guard_stop")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    private fun parry(event: KeyboardInputTickEvent.Post) {
-//        val player = Minecraft.getInstance().player ?: return
-//        if (player !is IFightSkillHolder) return
-//        val skillController = player.skillController ?: return
-//        if (skillController !is CommonFightSkillController) return
-//
-//        while (SOFKeyMappings.PARRY.consumeClick()) {
-//            if (skillController.guard.isPlaying() && !skillController.parry.isPlaying()) {
-//                skillController.parry.start {
-//                    ClientOperationPayload.sendOperationToServer("parry")
-//                }
-//            }
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    private fun stop(event: MovementInputUpdateEvent) {
-//        val player = event.entity as LocalPlayer
-//        val input = player.input
-//        if (player is IFightSkillHolder) {
-//            val skill = player.skillController
-//            if (skill != null && skill.guard.isStanding { !it.isInTransition }) {
-//                input.forwardImpulse /= 4f
-//                input.leftImpulse /= 4f
-//                input.jumping = false
-//                input.shiftKeyDown = false
-//                player.sprintTriggerTime = -1
-//                player.swinging = false
-//            } else if ((skill != null && skill.isPlayingSkill { !it.isCancelled }) || (player as IEntityAnimatable<*>).shouldOperateFreezing()) {
-//                // 在普通连招过程中可以按住s阻止前移
-//                if (input.forwardImpulse < 0 && skill?.combo?.isPlaying() == true) {
-//                    player.deltaMovement = Vec3(0.0, player.deltaMovement.y, 0.0)
-//                }
-//                input.forwardImpulse = 0f
-//                input.leftImpulse = 0f
-//                input.up = false
-//                input.down = false
-//                input.left = false
-//                input.right = false
-//                input.jumping = false
-//                input.shiftKeyDown = false
-//                player.sprintTriggerTime = -1
-//                player.swinging = false
-//            }
-//        }
-//    }
 //
 //    /**
 //     * 在释放技能/受击时禁用除了攻击以外的交互

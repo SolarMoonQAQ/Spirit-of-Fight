@@ -1,13 +1,14 @@
 package cn.solarmoon.spirit_of_fight.feature.fight_skill.controller
 
+import cn.solarmoon.spark_core.SparkCore
 import cn.solarmoon.spark_core.animation.IEntityAnimatable
 import cn.solarmoon.spark_core.skill.SkillController
 import cn.solarmoon.spark_core.util.CycleIndex
 import cn.solarmoon.spirit_of_fight.data.SOFSkillTags
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.AttackAnimSkill
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.CommonGuardAnimSkill
-import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.GuardAnimSkill
-import cn.solarmoon.spirit_of_fight.fighter.getEntityPatch
+import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.DodgeAnimSkill
+import cn.solarmoon.spirit_of_fight.fighter.getPatch
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -35,6 +36,12 @@ abstract class FightSkillController(
 
     abstract fun getGuardSkill(): CommonGuardAnimSkill
 
+    abstract fun getSprintingAttackSkill(): AttackAnimSkill
+
+    abstract fun getJumpAttackSkill(): AttackAnimSkill
+
+    abstract fun getDodgeSkill(): DodgeAnimSkill
+
     open fun isAttacking() = allSkills.any { it.isActive() && it.`is`(SOFSkillTags.FORGE_ATTACK) }
 
     fun getComboSkill() = getComboSkill(comboIndex.get())
@@ -42,17 +49,17 @@ abstract class FightSkillController(
     override fun tick() {
         // 不在播放任意技能时重置连击
         if (!isPlaying()) {
-            comboIndex.set(0)
+            comboIndex.set(maxComboAmount - 1)
         }
 
         // 攻击碰撞大小
-        holder.getEntityPatch().weaponAttackBody?.let {
+        holder.getPatch().weaponAttackBody?.let {
             val box = it.body.firstGeom as? DBox ?: return@let
             box.lengths = boxLength
             box.offsetPosition = boxOffset
         }
         // 防守碰撞大小
-        holder.getEntityPatch().weaponGuardBody?.let {
+        holder.getPatch().weaponGuardBody?.let {
             val box = it.body.firstGeom as? DBox ?: return@let
             box.lengths = boxLength
             box.offsetPosition = boxOffset
@@ -65,6 +72,14 @@ abstract class FightSkillController(
         if (unblockableDamageTypes.any { event.source.`is`(it) }) return
 
         getGuardSkill().onHurt(event)
+        getDodgeSkill().onHurt(event)
+    }
+
+    override fun onDisabledMoment() {
+        super.onDisabledMoment()
+        if (allActiveSkills.isNotEmpty()) {
+            animatable.animController.stopAllAnimation()
+        }
     }
 
 }

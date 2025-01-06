@@ -4,6 +4,8 @@
     "spirit_of_fight:sword_combo_1",
     "spirit_of_fight:sword_combo_2",
     "spirit_of_fight:sword_jump_attack",
-    "spirit_of_fight:sword_sprinting_attack"
+    "spirit_of_fight:sword_sprinting_attack",
+    "spirit_of_fight:sword_parry",
+    "spirit_of_fight:common_dodge"
   ]
 }

@@ -1,12 +1,11 @@
 package cn.solarmoon.spirit_of_fight.feature.fight_skill.attack
 
+import cn.solarmoon.spark_core.SparkCore
 import cn.solarmoon.spark_core.entity.attack.AttackSystem
-import cn.solarmoon.spark_core.entity.attack.AttackedData
-import cn.solarmoon.spark_core.entity.attack.setAttackedData
 import cn.solarmoon.spark_core.phys.attached_body.AttachedBody
-import cn.solarmoon.spark_core.phys.attached_body.EntityBoundingBoxBody
 import cn.solarmoon.spark_core.phys.attached_body.putBody
-import cn.solarmoon.spark_core.phys.thread.getPhysWorld
+import cn.solarmoon.spark_core.phys.thread.PhysLevel
+import cn.solarmoon.spark_core.phys.thread.getPhysLevel
 import cn.solarmoon.spark_core.phys.toDVector3
 import cn.solarmoon.spark_core.registry.common.SparkVisualEffects
 import cn.solarmoon.spark_core.skill.getTypedSkillController
@@ -69,11 +68,18 @@ object AttackModifier {
         }
     }
 
+    @SubscribeEvent
+    private fun test2(event: EntityTickEvent.Pre) {
+        val entity = event.entity
+        val level = entity.level()
+    }
+
     class AttackBody(level: Level, entity: Entity): AttachedBody {
         override val name: String = "wow"
-        override val body: DBody = OdeHelper.createBody(name, entity, false, level.getPhysWorld().world)
-        val geom = OdeHelper.laterCreateBox(body, level.getPhysWorld(), DVector3())
-        val ats = AttackSystem(entity)
+        override val physLevel: PhysLevel = level.getPhysLevel()
+        override val body: DBody = OdeHelper.createBody(name, entity, false, physLevel.physWorld.world)
+        val geom = OdeHelper.laterCreateBox(body, physLevel.physWorld, DVector3())
+        val ats = AttackSystem(entity).apply { ignoreInvulnerableTime = false }
 
         init {
             body.onTick {

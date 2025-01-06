@@ -20,9 +20,9 @@ open class SkillAttackAnimBody(
     override fun whenAttacked(o2: DGeom, buffer: DContactBuffer) {
         super.whenAttacked(o2, buffer)
 
-        entity.getSkillController()?.allSkills?.forEach {
+        entity.getSkillController()?.allActiveSkills?.forEach {
             if (it is AttackAnimSkill) {
-                it.whenAttacked(geom, o2, buffer)
+                it.whenAttacked(geom, o2, buffer, attackSystem)
             }
         }
     }
