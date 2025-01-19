@@ -1,0 +1,78 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"1": "spirit_of_fight:item/iron_hammer_in_hand",
+		"particle": "spirit_of_fight:item/iron_hammer"
+	},
+	"elements": [
+		{
+			"from": [5.75, 11, -5],
+			"to": [10.25, 19, -1],
+			"rotation": {"angle": 45, "axis": "x", "origin": [8, 15, 9]},
+			"faces": {
+				"north": {"uv": [1, 1, 2, 3], "texture": "#1"},
+				"east": {"uv": [0, 1, 1, 3], "texture": "#1"},
+				"south": {"uv": [3, 1, 4, 3], "texture": "#1"},
+				"west": {"uv": [2, 1, 3, 3], "texture": "#1"},
+				"up": {"uv": [2, 1, 1, 0], "texture": "#1"},
+				"down": {"uv": [3, 0, 2, 1], "texture": "#1"}
+			}
+		},
+		{
+			"from": [7.5, 14, -1.25],
+			"to": [8.5, 16, 23.75],
+			"rotation": {"angle": 45, "axis": "x", "origin": [8, 15, 9]},
+			"faces": {
+				"north": {"uv": [6.25, 6.25, 6.5, 6.75], "texture": "#1"},
+				"east": {"uv": [0, 6.25, 6.25, 6.75], "texture": "#1"},
+				"south": {"uv": [12.75, 6.25, 13, 6.75], "texture": "#1"},
+				"west": {"uv": [6.5, 6.25, 12.75, 6.75], "texture": "#1"},
+				"up": {"uv": [6.5, 6.25, 6.25, 0], "texture": "#1"},
+				"down": {"uv": [6.75, 0, 6.5, 6.25], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [45, 0, 0],
+			"translation": [0, 1.5, -3.75]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [45, 0, 0],
+			"translation": [0, 1.5, -3.75]
+		},
+		"firstperson_righthand": {
+			"rotation": [15, 0, 0],
+			"translation": [9.25, -1.25, -11.75]
+		},
+		"firstperson_lefthand": {
+			"rotation": [15, 0, 0],
+			"translation": [9.25, -1.25, -11.75]
+		},
+		"ground": {
+			"translation": [0, 1, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [15, -60, 0],
+			"translation": [0, -5, 0],
+			"scale": [0.65, 0.65, 0.65]
+		},
+		"head": {
+			"translation": [0, 7.75, -1.5]
+		},
+		"fixed": {
+			"rotation": [0, 90, 0],
+			"translation": [0, -7.75, 0]
+		}
+	},
+	"groups": [
+		{
+			"name": "root",
+			"origin": [8, 0, 8],
+			"color": 0,
+			"children": [0, 1]
+		}
+	]
+}

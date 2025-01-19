@@ -86,7 +86,8 @@ tasks.withType(ProcessResources).configureEach {
             mod_version            : mod_version,
             mod_authors            : mod_authors,
             mod_description        : mod_description,
-            kotlinforforge_version : kotlinforforge_version
+            kotlinforforge_version : kotlinforforge_version,
+            spark_core_version     : spark_core_version
     ]
     inputs.properties replaceProperties
     filesMatching(['META-INF/neoforge.mods.toml']) {

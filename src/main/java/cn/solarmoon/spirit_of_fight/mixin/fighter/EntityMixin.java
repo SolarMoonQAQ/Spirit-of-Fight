@@ -27,4 +27,5 @@ public class EntityMixin implements IEntityPatchHolder {
     public void setPatch(EntityPatch patch) {
         this.patch = patch;
     }
+
 }

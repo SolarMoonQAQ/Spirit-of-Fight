@@ -37,3 +37,10 @@ file="META-INF/accesstransformer.cfg"
     versionRange="[${kotlinforforge_version},)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="spark_core"
+    type="required"
+    versionRange="[${spark_core_version},)"
+    ordering="NONE"
+    side="BOTH"

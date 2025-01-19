@@ -1,6 +1,6 @@
 package cn.solarmoon.spirit_of_fight.feature.lock_on
 
-import cn.solarmoon.spark_core.entity.state.smoothLookAt
+import cn.solarmoon.spark_core.entity.smoothLookAt
 import cn.solarmoon.spark_core.event.EntityTurnEvent
 import cn.solarmoon.spirit_of_fight.registry.client.SOFKeyMappings
 import net.minecraft.client.Minecraft

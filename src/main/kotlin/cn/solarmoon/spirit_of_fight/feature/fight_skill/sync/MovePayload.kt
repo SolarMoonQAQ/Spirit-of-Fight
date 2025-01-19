@@ -2,6 +2,7 @@ package cn.solarmoon.spirit_of_fight.feature.fight_skill.sync
 
 import cn.solarmoon.spark_core.SparkCore
 import cn.solarmoon.spark_core.data.SerializeHelper
+import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
@@ -32,7 +33,7 @@ data class MovePayload(
         }
 
         @JvmStatic
-        val TYPE = CustomPacketPayload.Type<MovePayload>(ResourceLocation.fromNamespaceAndPath(SparkCore.MOD_ID, "client_move"))
+        val TYPE = CustomPacketPayload.Type<MovePayload>(ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "client_move"))
 
         @JvmStatic
         val STREAM_CODEC = StreamCodec.composite(

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "spirit_of_fight:item/iron_hammer"
+  }
+}

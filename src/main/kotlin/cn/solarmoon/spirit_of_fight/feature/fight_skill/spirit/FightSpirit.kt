@@ -35,7 +35,7 @@ class FightSpirit {
         }
     }
 
-    fun addStage(multiplier: Float) = addStage((baseGrowth * multiplier).toInt())
+    fun addStage(multiplier: Double) = addStage((baseGrowth * multiplier).toInt())
 
     fun clear() {
         valueCache = value

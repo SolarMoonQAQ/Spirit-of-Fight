@@ -5,39 +5,31 @@ import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.AttackAnimSkill
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.CommonGuardAnimSkill
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.DodgeAnimSkill
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.ParryAnimSkill
-import cn.solarmoon.spirit_of_fight.registry.common.SOFSkills
+import cn.solarmoon.spirit_of_fight.feature.fight_skill.skill.SpecialAttackAnimSkill
+import cn.solarmoon.spirit_of_fight.registry.common.skill.SOFSwordSkills
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.entity.LivingEntity
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 import org.ode4j.math.DVector3
 
 class SwordFightSkillController(
     holder: LivingEntity,
     animatable: IEntityAnimatable<*>
-): FightSkillController(holder, animatable) {
+): CommonFightSkillController("sword", holder, animatable, 3), IFSSwitchNextCombo {
+
+    override val switchComboIndex: Int = 0
 
     override val boxLength: DVector3 = DVector3(0.65, 0.65, 1.15)
     override val boxOffset: DVector3 = DVector3(0.0, 0.0, -0.575)
 
-    val combo1 = SOFSkills.SWORD_COMBO_0.get().create(animatable)
-    val combo2 = SOFSkills.SWORD_COMBO_1.get().create(animatable)
-    val combo3 = SOFSkills.SWORD_COMBO_2.get().create(animatable)
-    val sprintingAttack = SOFSkills.SWORD_SPRINTING_ATTACK.get().create(animatable)
-    val jumpAttack = SOFSkills.SWORD_JUMP_ATTACK.get().create(animatable)
-    val guard = SOFSkills.SWORD_GUARD.get().create(animatable)
-    val parry = SOFSkills.SWORD_PARRY.get().create(animatable)
-    val dodge = SOFSkills.COMMON_DODGE.get().create(animatable)
-
-    init {
-        addSkill(combo1)
-        addSkill(combo2)
-        addSkill(combo3)
-        addSkill(sprintingAttack)
-        addSkill(jumpAttack)
-        addSkill(guard)
-        addSkill(parry)
-        addSkill(dodge)
-    }
+    val combo1 = SOFSwordSkills.COMBO_0.get().create(animatable, this)
+    val combo2 = SOFSwordSkills.COMBO_1.get().create(animatable, this)
+    val combo3 = SOFSwordSkills.COMBO_2.get().create(animatable, this)
+    val sprintingAttack = SOFSwordSkills.SPRINTING_ATTACK.get().create(animatable, this)
+    val jumpAttack = SOFSwordSkills.JUMP_ATTACK.get().create(animatable, this)
+    val guard = SOFSwordSkills.GUARD.get().create(animatable, this)
+    val parry = SOFSwordSkills.PARRY.get().create(animatable, this)
+    val dodge = SOFSwordSkills.DODGE.get().create(animatable, this)
+    val special = SOFSwordSkills.SPECIAL_ATTACK_S.get().create(animatable, this)
 
     override fun isAvailable(): Boolean {
         return holder.mainHandItem.`is`(ItemTags.SWORDS)
@@ -64,7 +56,7 @@ class SwordFightSkillController(
         return guard
     }
 
-    fun getParrySkill(): ParryAnimSkill {
+    override fun getParrySkill(): ParryAnimSkill {
         return parry
     }
 
@@ -72,9 +64,8 @@ class SwordFightSkillController(
         return dodge
     }
 
-    override fun onHurt(event: LivingIncomingDamageEvent) {
-        super.onHurt(event)
-        parry.onHurt(event)
+    override fun getSpecialAttackSkill(index: Int): SpecialAttackAnimSkill {
+        return special
     }
 
 }

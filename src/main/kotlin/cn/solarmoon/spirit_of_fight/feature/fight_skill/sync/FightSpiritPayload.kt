@@ -1,6 +1,7 @@
 package cn.solarmoon.spirit_of_fight.feature.fight_skill.sync
 
 import cn.solarmoon.spark_core.SparkCore
+import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import cn.solarmoon.spirit_of_fight.feature.fight_skill.spirit.getFightSpirit
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
@@ -40,7 +41,7 @@ data class FightSpiritPayload(
         }
 
         @JvmStatic
-        val TYPE = CustomPacketPayload.Type<FightSpiritPayload>(ResourceLocation.fromNamespaceAndPath(SparkCore.MOD_ID, "client_fight_spirit"))
+        val TYPE = CustomPacketPayload.Type<FightSpiritPayload>(ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "client_fight_spirit"))
 
         @JvmStatic
         val STREAM_CODEC = StreamCodec.composite(

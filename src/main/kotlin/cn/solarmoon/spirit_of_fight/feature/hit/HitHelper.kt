@@ -1,15 +1,12 @@
 package cn.solarmoon.spirit_of_fight.feature.hit
 
+import cn.solarmoon.spark_core.animation.IEntityAnimatable
 import cn.solarmoon.spark_core.entity.attack.AttackedData
+import cn.solarmoon.spirit_of_fight.registry.common.SOFRegistries
 
-fun AttackedData.getHitType() = extraData.getString("hitType").takeIf { it.isNotEmpty() }?.let { HitType.valueOf(it) }
+fun AttackedData.getHitType() = extraData.getInt("hitType").let { SOFRegistries.HIT_TYPE.byId(it) }
 
 fun AttackedData.setHitType(hitType: HitType) {
-    extraData.putString("hitType", hitType.toString())
+    extraData.putInt("hitType", hitType.id)
 }
 
-fun AttackedData.getHitStrength() = extraData.getInt("hitStrength")
-
-fun AttackedData.setHitStrength(strength: Int) {
-    extraData.putInt("hitStrength", strength)
-}
