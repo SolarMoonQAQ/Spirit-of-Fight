@@ -1,25 +1,19 @@
 package cn.solarmoon.spirit_of_fight.skill.tree
 
 import cn.solarmoon.spark_core.preinput.PreInput
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
 import cn.solarmoon.spark_core.skill.Skill
-import cn.solarmoon.spark_core.util.MoveDirection
+import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import cn.solarmoon.spirit_of_fight.registry.common.SOFRegistries
 import cn.solarmoon.spirit_of_fight.skill.tree.node.SkillTreeNode
-import cn.solarmoon.spirit_of_fight.sync.MoveDirectionPayload
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.client.KeyMapping
-import net.minecraft.client.gui.components.WidgetSprites
 import net.minecraft.client.player.Input
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.RegistryAccess
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.level.Level
-import net.neoforged.neoforge.network.PacketDistributor
 
 class SkillTree(
     val ingredient: Ingredient,
@@ -124,7 +118,7 @@ class SkillTree(
 
     fun getIcon(registryAccess: RegistryAccess): ResourceLocation {
         val key = getRegistryKey(registryAccess)
-        return SparkResourcePathBuilder.buildResourcePath("spirit_of_fight", "spirit_of_fight", "textures", "skill/tree/${key.path}")
+        return ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/skill/tree/${key.path}.png")
     }
 
     fun getRegistryKey(registryAccess: RegistryAccess) = registryAccess.registry(SOFRegistries.SKILL_TREE).get().getKey(this) ?: throw NullPointerException("技能树尚未注册")

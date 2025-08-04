@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
+
 class StopNode(
     override val conditions: List<SkillTreeCondition>,
     override val preInputId: String = SOFPreInputs.STOP,
@@ -24,7 +24,7 @@ class StopNode(
 
     override val name = Component.translatable("skill.stop.name")
     override val description = Component.translatable("skill.stop.description")
-    override val icon: ResourceLocation = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures","skill/stop")
+    override val icon: ResourceLocation = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/skill/stop.png")
 
     override fun match(player: Player, skill: Skill?): Boolean {
         return skill?.canTransitionTo(SkillPhase.END) == true && super.match(player, skill)

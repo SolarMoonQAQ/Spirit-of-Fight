@@ -1,26 +1,21 @@
 package cn.solarmoon.spirit_of_fight.skill.tree.ui
 
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
 import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import cn.solarmoon.spirit_of_fight.skill.tree.SkillTreeSet
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import kotlin.math.ceil
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
 
 class SkillTreeSetScreen(
     val treeSet: SkillTreeSet
 ): Screen(Component.literal("技能树选择界面")) {
 
     // 资源路径
-    val bambooScrollHead = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/bamboo_scroll_head")
-    val bambooScroll = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/bamboo_scroll")
-    val bambooScrollFoot = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/bamboo_scroll_foot")
+    val bambooScrollHead = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/bamboo_scroll_head.png")
+    val bambooScroll = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/bamboo_scroll.png")
+    val bambooScrollFoot = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/bamboo_scroll_foot.png")
 
     // 尺寸常量（根据美术资源实际尺寸调整）
     private val buttonSize = 24      // 按钮实际像素尺寸

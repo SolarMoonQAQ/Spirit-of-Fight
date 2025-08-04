@@ -68,17 +68,8 @@ Skill.create("spirit_of_fight:sword.single_wield.combo_3", builder => {
 
             // 攻击段管理和 AttackSystem 重置
             if (animTime >= 0.25 && animTime <= 0.5) {
-                // 攻击段
-                if (currentAttackPhase !== 1) {
-                    currentAttackPhase = 1
-                    globalAttackSystem.reset()
-                }
                 attackBody.setCollideWithGroups(1)
             } else {
-                // 非攻击时段
-                if (currentAttackPhase !== 0) {
-                    currentAttackPhase = 0
-                }
                 attackBody.setCollideWithGroups(0)
             }
         })

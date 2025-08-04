@@ -1,6 +1,5 @@
 package cn.solarmoon.spirit_of_fight.skill.tree.ui
 
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
 import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import cn.solarmoon.spirit_of_fight.skill.tree.SkillTree
 import com.mojang.blaze3d.systems.RenderSystem
@@ -20,7 +19,7 @@ class SkillTreeButton(
     size,
     WidgetSprites(
         tree.getIcon(level.registryAccess()),
-        SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/skill_tree_focused")
+        ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/skill_tree_focused.png")
     ),
     onPress,
     tree.getName(level.registryAccess())

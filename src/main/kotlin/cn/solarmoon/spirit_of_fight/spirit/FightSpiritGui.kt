@@ -1,6 +1,5 @@
 package cn.solarmoon.spirit_of_fight.spirit
 
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
 import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.DeltaTracker
@@ -10,10 +9,10 @@ import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.resources.ResourceLocation
 
 class FightSpiritGui: LayeredDraw.Layer {
-    
+
     companion object {
-        val EMPTY = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/fight_spirit_empty")
-        val FULL = SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/fight_spirit_full")
+        val EMPTY = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/fight_spirit_empty.png")
+        val FULL = ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/fight_spirit_full.png")
     }
 
     override fun render(

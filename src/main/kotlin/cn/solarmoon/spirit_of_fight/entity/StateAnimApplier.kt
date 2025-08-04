@@ -1,10 +1,7 @@
 package cn.solarmoon.spirit_of_fight.entity
 
 import cn.solarmoon.spark_core.event.ChangePresetAnimEvent
-import cn.solarmoon.spirit_of_fight.data.SOFItemTags
-import cn.solarmoon.spirit_of_fight.registry.common.SOFTypedAnimations
 import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.neoforge.common.Tags
 
 object StateAnimApplier {
 

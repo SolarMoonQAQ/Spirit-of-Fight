@@ -1,14 +1,17 @@
-package cn.solarmoon.spirit_of_fight.skill
+package cn.solarmoon.spirit_of_fight.util
 
 import cn.solarmoon.spark_core.animation.IEntityAnimatable
-import cn.solarmoon.spark_core.animation.anim.play.AnimEvent
+import cn.solarmoon.spark_core.animation.anim.play.AnimInstance
+import cn.solarmoon.spark_core.registry.common.SparkRegistries
+import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
+import cn.solarmoon.spark_core.util.MoveDirection
 import cn.solarmoon.spark_core.util.toVec3
+import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import com.jme3.bullet.collision.ManifoldPoints
 import com.jme3.bullet.collision.PhysicsCollisionObject
 import com.jme3.math.Vector3f
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.phys.Vec3
-import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 
 object SkillHelper {
 
@@ -36,6 +39,12 @@ object SkillHelper {
                 it.setPos(pos)
             }
         }
+    }
+
+    fun createAnimByDirection(animatable: IEntityAnimatable<*>, animBaseName: String, default: MoveDirection): AnimInstance {
+        val direction = animatable.animatable.moveDirection ?: default
+        val animPath = SparkResourcePathBuilder.buildAnimationPath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "player", "${animBaseName}.${direction.toString().lowercase()}")
+        return SparkRegistries.TYPED_ANIMATION.get(animPath)!!.create(animatable)
     }
 
 }

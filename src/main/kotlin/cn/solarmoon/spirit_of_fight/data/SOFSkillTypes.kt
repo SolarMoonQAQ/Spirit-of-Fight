@@ -17,8 +17,8 @@ object SOFSkillTypes {
     val SWORD_SHIELD_COMBO_C1 = sofKey("sword_shield_combo_c1")
     val SWORD_SPRINT_ATTACK = sofKey("sword_dash_attack")
     val SWORD_JUMP_ATTACK = sofKey("sword_jump_attack")
-    val SWORD_DODGE = sofKey("sword_dodge")
-    val SWORD_GUARD = sofKey("sword_guard")
+    val SWORD_DODGE = sofKey("sword.dodge")
+    val SWORD_GUARD = sofKey("sword.guard")
     val SWORD_SWITCH_ATTACK = sofKey("sword.switch_attack")
 
     val HAMMER_COMBO_0 = sofKey("hammer_combo_0")

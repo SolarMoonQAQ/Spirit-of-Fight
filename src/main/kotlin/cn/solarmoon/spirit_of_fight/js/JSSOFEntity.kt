@@ -1,8 +1,10 @@
 package cn.solarmoon.spirit_of_fight.js
 
+import cn.solarmoon.spark_core.animation.IEntityAnimatable
 import cn.solarmoon.spark_core.js.extension.JSEntity
-import cn.solarmoon.spirit_of_fight.skill.controller.WieldStyle
+import cn.solarmoon.spirit_of_fight.entity.WieldStyle
 import cn.solarmoon.spirit_of_fight.spirit.getFightSpirit
+import net.minecraft.world.entity.Entity
 
 interface JSSOFEntity: JSEntity {
 
@@ -19,19 +21,21 @@ interface JSSOFEntity: JSEntity {
 
     fun clearGrabs() = entity.grabManager.clear()
 
-    fun blendMove(enable: Boolean) {
-//        val entity = entity
-//        if (entity is IEntityAnimatable<*>) {
-//            if (enable) {
-//                entity.animController.blendSpace.putIfAbsent("#move", BlendAnimation(SparkTypedAnimations.WALK.get().create(entity), 5.0, entity.model.bones.keys.filter { it !in listOf("rightLeg", "leftLeg") }))
-//            } else {
-//                entity.animController.blendSpace.remove("#move")
-//            }
-//        }
+    fun blendMove() {
+        val entity = entity
+        if (entity !is IEntityAnimatable<*>) return
+        if (entity.isMoving) {
+//            entity.animController.blendAnimation(BlendAnimation(entity.createAnimation(1)))
+        }
     }
 
     fun toggleWieldStyle() {
         WieldStyle.switch(entity)
+    }
+
+    override fun commonAttack(target: Entity) {
+        target.pushHurtData(target.hurtData)
+        super.commonAttack(target)
     }
 
 }

@@ -65,7 +65,7 @@
         }
       ],
       "pre_input_id": "guard",
-      "skill": "spirit_of_fight:sword_guard"
+      "skill": "spirit_of_fight:sword.guard"
     }
   ]
 }

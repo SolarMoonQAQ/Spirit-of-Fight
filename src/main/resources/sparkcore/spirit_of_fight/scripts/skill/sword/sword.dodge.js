@@ -1,6 +1,5 @@
-Skill.createBy("spirit_of_fight:sword_dodge", "spirit_of_fight:dodge", builder => {
+Skill.createBy("spirit_of_fight:sword.dodge", "spirit_of_fight:dodge", builder => {
     builder.acceptConfig(config => {
-        config.put('anim_name', 'sword:dodge')
         config.put('enable_perfect_dodge', true)
         config.put('max_perfect_dodge_times', 1)
     })
@@ -11,8 +10,7 @@ Skill.createBy("spirit_of_fight:sword_dodge", "spirit_of_fight:dodge", builder =
 
         if (entity == null || animatable == null) return
 
-        const config = skill.getConfig()
-        const anim = config.get("animation")
+        const anim = SOFHelper.createAnimByDirection(animatable, "sword.dodge", "forward")
 
         anim.onEnd(event => {
             skill.end()

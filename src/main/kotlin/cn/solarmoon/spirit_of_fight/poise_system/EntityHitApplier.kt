@@ -1,4 +1,4 @@
-package cn.solarmoon.spirit_of_fight.hit
+package cn.solarmoon.spirit_of_fight.poise_system
 
 import cn.solarmoon.spark_core.SparkCore
 import cn.solarmoon.spark_core.animation.IEntityAnimatable
@@ -8,6 +8,7 @@ import cn.solarmoon.spark_core.camera.setCameraLock
 import cn.solarmoon.spark_core.entity.getLateralSide
 import cn.solarmoon.spark_core.entity.getSide
 import cn.solarmoon.spark_core.util.Key
+import cn.solarmoon.spark_core.util.toVec3
 import cn.solarmoon.spirit_of_fight.event.GetHitAnimationEvent
 import cn.solarmoon.spirit_of_fight.registry.common.SOFPreInputs
 import cn.solarmoon.spirit_of_fight.registry.common.SOFTypedAnimations
@@ -17,7 +18,6 @@ import net.minecraft.world.entity.Entity
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent
-import cn.solarmoon.spark_core.util.toVec3
 
 object EntityHitApplier {
 
@@ -26,24 +26,27 @@ object EntityHitApplier {
     @SubscribeEvent
     private fun onHit(event: LivingDamageEvent.Post) {
         val victim = event.entity
-        if (victim.isKnockedDown) return
         if (event.newDamage <= 0f) return
         if (victim !is IEntityAnimatable<*>) return
         val source = event.source
         val sourcePos = source.sourcePosition ?: return
         val attackData = source.extraData ?: return
 
-        val hitType = attackData.blackBoard.read(HIT_TYPE) ?: return
-        if (hitType.level == HitLevel.WHEN_NOT_PLAYING_SKILLS && victim.isPlayingSkill) return
-        val hitSide = victim.getLateralSide(attackData.damagedBody.getPhysicsLocation(Vector3f()).toVec3())
-        val posSide = victim.getSide(sourcePos)
-        attackData.damagedBody.let {
-            val boneName = it.name
-            NeoForge.EVENT_BUS.post(GetHitAnimationEvent(victim, hitType, boneName, posSide, hitSide)).resultHitAnim?.apply {
-                if (exist()) {
-                    play(victim, 0)
-                    playToClient(victim.id, 0)
-                } else SparkCore.LOGGER.warn("${victim.type} 缺少受击动画：${index}")
+        val hitType = HitType(SOFHitTypes.KNOCKDOWN_CHOP.name.lowercase(), 100)
+        val strength = hitType.poiseDamage
+        val poiseData = victim.poise
+
+        if (poiseData.reduce(strength)) {
+            val hitSide = victim.getLateralSide(attackData.damagedBody.getPhysicsLocation(Vector3f()).toVec3())
+            val posSide = victim.getSide(sourcePos)
+            attackData.damagedBody.let {
+                val boneName = it.name
+                NeoForge.EVENT_BUS.post(GetHitAnimationEvent(victim, hitType, boneName, posSide, hitSide)).resultHitAnim?.apply {
+                    if (exist()) {
+                        play(victim, 0)
+                        playToClient(victim.id, 0)
+                    } else SparkCore.LOGGER.warn("${victim.type} 缺少受击动画：${index}")
+                }
             }
         }
     }
@@ -53,7 +56,7 @@ object EntityHitApplier {
         val animName = SOFHitTypes.getHitAnimation(event.hitType.name, event.boneName, event.posSide, event.hitSide)
         SOFTypedAnimations.HIT_ANIMS[animName]?.let {
             if (event.animatable.model.bones.keys.containsAll(setOf("head", "waist", "leftArm", "rightArm", "leftLeg", "rightLeg"))) {
-                event.resultHitAnim = it.get()
+                event.resultHitAnim = it
             }
         }
     }

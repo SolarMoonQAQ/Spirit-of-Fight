@@ -1,12 +1,10 @@
 package cn.solarmoon.spirit_of_fight.skill.tree.ui
 
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
 import cn.solarmoon.spark_core.util.ColorUtil
 import cn.solarmoon.spirit_of_fight.SpiritOfFight
 import cn.solarmoon.spirit_of_fight.skill.tree.SkillTree
 import cn.solarmoon.spirit_of_fight.util.drawThickHLine
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
@@ -14,7 +12,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.Level
-import org.joml.Vector2f
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -99,7 +96,7 @@ class SkillTreeScreen(
     private fun onHovering(guiGraphics: GuiGraphics, layout: SkillTreeNodeLayout) {
         // 选框
         guiGraphics.blit(
-            SparkResourcePathBuilder.buildResourcePath(SpiritOfFight.MOD_ID, SpiritOfFight.MOD_ID, "textures", "gui/skill_tree_checkbox"),
+            ResourceLocation.fromNamespaceAndPath(SpiritOfFight.MOD_ID, "textures/gui/skill_tree_checkbox.png"),
             layout.pos.first - layout.iconSize / 2,
             layout.pos.second - layout.iconSize / 2,
             0f, 0f,

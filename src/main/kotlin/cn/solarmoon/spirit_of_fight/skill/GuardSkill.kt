@@ -10,8 +10,9 @@ import cn.solarmoon.spark_core.skill.SkillEvent
 import cn.solarmoon.spark_core.skill.SkillPhase
 import cn.solarmoon.spark_core.skill.payload.SkillPayload
 import cn.solarmoon.spark_core.util.Side
-import cn.solarmoon.spirit_of_fight.hit.EntityHitApplier
+import cn.solarmoon.spirit_of_fight.poise_system.EntityHitApplier
 import cn.solarmoon.spirit_of_fight.registry.common.SOFTypedAnimations
+import cn.solarmoon.spirit_of_fight.util.SkillHelper
 import com.jme3.bullet.collision.PhysicsCollisionObject
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.phys.Vec3

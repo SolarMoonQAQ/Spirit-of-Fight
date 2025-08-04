@@ -1,4 +1,4 @@
-package cn.solarmoon.spirit_of_fight.skill.controller
+package cn.solarmoon.spirit_of_fight.entity
 
 import com.mojang.serialization.Codec
 import net.minecraft.network.chat.Component
@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity
 enum class WieldStyle(
     private val id: String
 ): StringRepresentable {
-    SINGLE_WIELD("single_wield"), DUAL_WIELD("dual_wield");
+    DEFAULT("default"), SPECIAL("special");
 
     val translatableName = Component.translatable("wield_style.${serializedName}")
 
@@ -19,8 +19,8 @@ enum class WieldStyle(
     companion object {
         fun switch(entity: Entity) {
             when(entity.wieldStyle) {
-                SINGLE_WIELD -> entity.wieldStyle = DUAL_WIELD
-                DUAL_WIELD -> entity.wieldStyle = SINGLE_WIELD
+                DEFAULT -> entity.wieldStyle = SPECIAL
+                SPECIAL -> entity.wieldStyle = DEFAULT
             }
         }
 

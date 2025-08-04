@@ -1,4 +1,4 @@
-package cn.solarmoon.spirit_of_fight.hit
+package cn.solarmoon.spirit_of_fight.poise_system
 
 import cn.solarmoon.spark_core.util.Side
 

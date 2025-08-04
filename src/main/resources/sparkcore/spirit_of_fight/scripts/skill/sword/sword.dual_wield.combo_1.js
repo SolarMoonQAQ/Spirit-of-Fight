@@ -17,7 +17,7 @@ Skill.create("spirit_of_fight:sword.dual_wield.combo_1", builder => {
         anim.setShouldTurnBody(true)
         const attackBody = PhysicsHelper.createCollisionBoxBoundToBone(animatable, 'rightItem', SpMath.vec3(1.0, 1.0, 2.0), SpMath.vec3(0.0, 0.0, -0.75))
         attackBody.onAttackCollide('attack', {
-            preAttack: (isFirst, attacker, target, o1, o2, manifoldId) => {
+            preAttack: (isFirst, attacker, target, o1, o2, manifoldId, attackSystem) => {
                 skill.addTarget(target)
                 if (isFirst) {
                     entity.cameraShake(2, 1, 2)
@@ -25,10 +25,10 @@ Skill.create("spirit_of_fight:sword.dual_wield.combo_1", builder => {
                 }
                 entity.addFightSpirit(50)
             },
-            doAttack: (attacker, target, o1, o2, manifoldId) => {
+            doAttack: (attacker, target, o1, o2, manifoldId, attackSystem) => {
                 entity.commonAttack(target)
             },
-            postAttack: (attacker, target, o1, o2, manifoldId) => {
+            postAttack: (attacker, target, o1, o2, manifoldId, attackSystem) => {
                 skill.removeTarget(target)
             }
         }, attackSystem)

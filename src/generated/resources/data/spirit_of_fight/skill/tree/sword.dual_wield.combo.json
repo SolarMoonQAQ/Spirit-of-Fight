@@ -14,7 +14,7 @@
               "conditions": [
                 {
                   "type": "spirit_of_fight:wield_style",
-                  "hold": "dual_wield"
+                  "hold": "special"
                 },
                 {
                   "type": "spirit_of_fight:key_input",
@@ -36,7 +36,7 @@
           "conditions": [
             {
               "type": "spirit_of_fight:wield_style",
-              "hold": "dual_wield"
+              "hold": "special"
             },
             {
               "type": "spirit_of_fight:key_input",
@@ -59,7 +59,7 @@
       "conditions": [
         {
           "type": "spirit_of_fight:wield_style",
-          "hold": "dual_wield"
+          "hold": "special"
         },
         {
           "type": "spirit_of_fight:key_input",

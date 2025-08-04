@@ -1,7 +1,7 @@
 package cn.solarmoon.spirit_of_fight.skill.tree.condition
 
 import cn.solarmoon.spark_core.skill.Skill
-import cn.solarmoon.spirit_of_fight.skill.controller.WieldStyle
+import cn.solarmoon.spirit_of_fight.entity.WieldStyle
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.network.chat.Component

@@ -1,18 +1,18 @@
-package cn.solarmoon.spirit_of_fight.hit
+package cn.solarmoon.spirit_of_fight.poise_system
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 
 class HitType(
     val name: String,
-    val level: HitLevel = HitLevel.WHEN_NOT_PLAYING_SKILLS
+    val poiseDamage: Int,
 ) {
 
     companion object {
         val CODEC: Codec<HitType> = RecordCodecBuilder.create {
             it.group(
                 Codec.STRING.fieldOf("name").forGetter { it.name },
-                HitLevel.CODEC.optionalFieldOf("level", HitLevel.WHEN_NOT_PLAYING_SKILLS).forGetter { it.level }
+                Codec.INT.fieldOf("poise_damage").forGetter { it.poiseDamage }
             ).apply(it, ::HitType)
         }
     }

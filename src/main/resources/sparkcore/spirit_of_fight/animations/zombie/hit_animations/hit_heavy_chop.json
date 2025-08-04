@@ -1934,7 +1934,7 @@
 				}
 			}
 		},
-		"Hit/heavy_chop:leg_left": {
+		"Hit/heavy_chop:leg_left2": {
 			"animation_length": 0.7917,
 			"bones": {
 				"head": {

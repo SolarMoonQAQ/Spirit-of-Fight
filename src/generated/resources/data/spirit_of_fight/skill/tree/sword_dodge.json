@@ -17,7 +17,7 @@
         }
       ],
       "pre_input_id": "dodge",
-      "skill": "spirit_of_fight:sword_dodge"
+      "skill": "spirit_of_fight:sword.dodge"
     }
   ]
 }

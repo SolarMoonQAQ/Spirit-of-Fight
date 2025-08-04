@@ -1,6 +1,5 @@
 package cn.solarmoon.spirit_of_fight.skill.tree.node
 
-import cn.solarmoon.spark_core.js.SparkJS
 import cn.solarmoon.spark_core.skill.SkillManager
 import cn.solarmoon.spirit_of_fight.skill.tree.SkillTree
 import cn.solarmoon.spirit_of_fight.skill.tree.condition.SkillTreeCondition
@@ -11,7 +10,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
-import cn.solarmoon.spark_core.resource.common.SparkResourcePathBuilder
+
 /**
  * @param reserveTime 每当条件匹配但还未能切换到下一个技能节点时会刷新一个预留时间，在此时间内技能树不会重置
  */
@@ -26,10 +25,10 @@ open class CommonNode(
 
     override val name = Component.translatable("skill.${skillLocation.namespace}.${skillLocation.path}.name")
     override val description = Component.translatable("skill.${skillLocation.namespace}.${skillLocation.path}.description")
-    override val icon: ResourceLocation = SparkResourcePathBuilder.buildResourcePath(skillLocation.namespace,skillLocation.namespace,"textures","skill/${skillLocation.path}")
+    override val icon: ResourceLocation = ResourceLocation.fromNamespaceAndPath(skillLocation.namespace, "textures/skill/${skillLocation.path}.png")
 
     override fun onEntry(host: Player, level: Level, tree: SkillTree): Boolean {
-        tree.currentSkill = SkillManager.get(skillLocation)!!.createSkill(host, level, true)
+        tree.currentSkill = SkillManager[skillLocation]!!.createSkill(host, level, true)
         return true
     }
 

@@ -1,8 +1,8 @@
 dependencies {
     //核心
-    implementation files("compileOnly/SparkCore-1.21.1-1.0.731.jar")
+    implementation files("compileOnly/SparkCore-1.21.1-1.0.736.jar")
+//    interfaceInjectionData files("compileOnly/SparkCore-1.21.1-1.0.736.jar")
 
-    //interfaceInjectionData "cn.solarmoon:spark-core-neoforge:${minecraft_version}-${spark_core_version}"
     implementation "io.github.nsk90:kstatemachine-jvm:0.33.0"
     implementation "org.mozilla:rhino:1.8.0"
     jarJar(implementation "org.jgrapht:jgrapht-core:1.5.2")
