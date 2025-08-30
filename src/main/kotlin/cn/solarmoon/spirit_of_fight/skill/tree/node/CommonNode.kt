@@ -45,6 +45,6 @@ open class CommonNode(
                 Codec.INT.optionalFieldOf("pre_input_duration", 5).forGetter { it.preInputDuration }
             ).apply(instance, ::CommonNode)
         }
-    }
+    }   
 
 }

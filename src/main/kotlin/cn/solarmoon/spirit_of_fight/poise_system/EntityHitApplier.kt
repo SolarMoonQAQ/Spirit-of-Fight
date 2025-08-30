@@ -47,12 +47,14 @@ object EntityHitApplier {
             val posSide = victim.getSide(sourcePos)
             collisionData.damagedBody.let {
                 val boneName = it.name
-                NeoForge.EVENT_BUS.post(GetHitAnimationEvent(victim, hitType, boneName, posSide, hitSide)).resultHitAnim?.apply {
+                val resultHitAnim = NeoForge.EVENT_BUS.post(GetHitAnimationEvent(victim, hitType, boneName, posSide, hitSide)).resultHitAnim
+                resultHitAnim?.apply {
                     if (exist()) {
                         play(victim, DefaultLayer.MAIN_LAYER, AnimLayerData(enterTransitionTime = 0))
                         playToClient(victim, DefaultLayer.MAIN_LAYER, AnimLayerData(enterTransitionTime = 0))
                     } else SparkCore.LOGGER.warn("${victim.type} 缺少受击动画：${index}")
                 }
+                SparkCore.LOGGER.info("受击动画：${resultHitAnim?.index?.name}, ${hitType.name},${resultHitAnim?.index?.locationName},${resultHitAnim?.index?.inputPath},${resultHitAnim?.index?.index}")
             }
         }
     }
@@ -60,9 +62,13 @@ object EntityHitApplier {
     @SubscribeEvent
     private fun getHitAnim(event: GetHitAnimationEvent) {
         val animName = SOFHitTypes.getHitAnimation(event.hitType.name, event.boneName, event.posSide, event.hitSide)
-        SOFTypedAnimations.HIT_ANIMS[animName]?.let {
-            if (event.animatable.model.bones.keys.containsAll(setOf("head", "waist", "leftArm", "rightArm", "leftLeg", "rightLeg"))) {
-                event.resultHitAnim = it
+        val ref = SOFTypedAnimations.HIT_ANIMS[animName]
+        if (ref != null) {
+            val hasBones = event.animatable.model.bones.keys.containsAll(
+                setOf("head", "waist", "leftArm", "rightArm", "leftLeg", "rightLeg")
+            )
+            if (hasBones) {
+                event.resultHitAnim = ref.get()
             }
         }
     }
@@ -104,25 +110,6 @@ object EntityHitApplier {
             }
         }
     }
-//
-//    @SubscribeEvent
-//    private fun onDeath(event: LivingDeathEvent) {
-//        val victim = event.entity
-//        if (victim !is IEntityAnimatable<*>) return
-//        val source = event.source
-//        val sourcePos = source.sourcePosition ?: return
-//        val attackData = source.extraData ?: return
-//        val hitType = attackData.getHitType() ?: return
-//        val strength = hitType.strength
-//        val side = victim.getLateralSide(attackData.damageBox.position.toVec3())
-//        val posSide = victim.getSide(sourcePos)
-//        attackData.damagedBody?.let {
-//            val boneName = it.name
-//            val hitAnimation = hitType.getDeathAnimation(victim, strength, boneName, posSide, side) ?: return
-//            victim.animController.setAnimation(hitAnimation, 0)
-//            PacketDistributor.sendToAllPlayers(HitAnimPayload(victim.id, hitType.id, strength, boneName, posSide, side, true))
-//        }
-//    }
 
     @SubscribeEvent
     private fun fall(event: LivingDamageEvent.Post) {
@@ -130,11 +117,10 @@ object EntityHitApplier {
         if (entity.isKnockedDown) return
         if (entity !is IEntityAnimatable<*>) return
         if (event.source.typeHolder().`is`(DamageTypes.FALL) && event.newDamage > 0) {
-            SOFTypedAnimations.PLAYER_HIT_LANDING.get().apply {
-//                play(entity, DefaultLayer.MAIN_LAYER, AnimLayerData(transitionTime = 0))
-//                playToClient(entity, DefaultLayer.MAIN_LAYER, AnimLayerData(transitionTime = 0))
+            SOFTypedAnimations.PLAYER_HIT_LANDING.get()?.apply {
+                // play(entity, DefaultLayer.MAIN_LAYER, AnimLayerData(transitionTime = 0))
+                // playToClient(entity, DefaultLayer.MAIN_LAYER, AnimLayerData(transitionTime = 0))
             }
         }
     }
-
 }
